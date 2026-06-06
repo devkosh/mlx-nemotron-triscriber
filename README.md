@@ -1,4 +1,4 @@
-# mlx-nemotron-streaming
+# mlx-nemotron-transcriber
 
 Batch audio transcription using [`mlx-community/nemotron-3.5-asr-streaming-0.6b`](https://huggingface.co/mlx-community/nemotron-3.5-asr-streaming-0.6b) on Apple MLX.
 
@@ -25,7 +25,13 @@ brew install uv ffmpeg
 ```bash
 uv venv --python 3.12
 source .venv/bin/activate
-uv pip install -r pyproject.toml
+uv pip install -e .
+```
+
+For running tests, also install dev dependencies:
+
+```bash
+uv pip install --group dev
 ```
 
 ### 2. Download the model into the project
@@ -46,7 +52,7 @@ mv ~/.cache/huggingface/hub/models--mlx-community--nemotron-3.5-asr-streaming-0.
    .venv/hf_cache/hub/
 ```
 
-After either option, verify:
+Verify:
 
 ```bash
 ls .venv/hf_cache/hub/models--mlx-community--nemotron-3.5-asr-streaming-0.6b/snapshots/
@@ -60,7 +66,7 @@ ls .venv/hf_cache/hub/models--mlx-community--nemotron-3.5-asr-streaming-0.6b/sna
 ### CLI
 
 ```bash
-python cli.py <audio_file> [--output transcript.txt] [--chunk-seconds 30] [--language uk]
+uv run mlx-nemotron <audio_file> [--output transcript.txt] [--chunk-seconds 30] [--language uk]
 ```
 
 - `--output` defaults to `<stem>_transcript.txt` beside the input file
@@ -70,8 +76,8 @@ python cli.py <audio_file> [--output transcript.txt] [--chunk-seconds 30] [--lan
 **Examples:**
 
 ```bash
-python cli.py interview.m4a
-python cli.py lecture.mp3 --output lecture.txt --language en-US
+uv run mlx-nemotron interview.m4a
+uv run mlx-nemotron lecture.mp3 --output lecture.txt --language en-US
 ```
 
 WAV chunks are cached in `$TMPDIR/mlx_nemotron_chunks/` keyed by file path + mtime. Re-running the same file skips the ffmpeg split step.
@@ -79,7 +85,7 @@ WAV chunks are cached in `$TMPDIR/mlx_nemotron_chunks/` keyed by file path + mti
 ### HTTP server
 
 ```bash
-python server.py [--host 0.0.0.0] [--port 8000]
+python src/mlx_nemotron/server.py [--host 0.0.0.0] [--port 8000]
 ```
 
 The model loads once at startup. Jobs run one at a time (single GPU).
@@ -105,3 +111,13 @@ curl -X POST http://localhost:8000/transcribe/path \
 curl http://localhost:8000/jobs/<job_id>
 # → {"status": "done", "transcript": "..."}
 ```
+
+---
+
+## Tests
+
+```bash
+uv run pytest
+```
+
+33 tests covering core transcription logic, CLI argument handling, and all server endpoints.
