@@ -1,0 +1,32 @@
+# venv
+.venv/
+
+# audio files & chunks
+chunks/
+*.wav
+*.m4a
+*.mp3
+*.mp4
+*.aac
+*.ogg
+*.flac
+
+# transcript output
+transcript.txt
+*_transcript.txt
+
+# python
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# macos
+.DS_Store
+
+# editor
+.idea/
+.vscode/
+*.swp
