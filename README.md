@@ -85,7 +85,7 @@ WAV chunks are cached in `$TMPDIR/mlx_nemotron_chunks/` keyed by file path + mti
 ### HTTP server
 
 ```bash
-python src/mlx_nemotron/server.py [--host 0.0.0.0] [--port 8000]
+uv run mlx-nemotron serve [--host 0.0.0.0] [--port 8000]
 ```
 
 The model loads once at startup. Jobs run one at a time (single GPU).
