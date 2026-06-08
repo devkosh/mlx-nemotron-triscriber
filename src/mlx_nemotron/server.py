@@ -84,6 +84,16 @@ async def transcribe_path(req: PathRequest):
     return {"job_id": job_id, "status": "pending"}
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
+@app.get("/jobs")
+async def list_jobs():
+    return JSONResponse(content=_jobs)
+
+
 @app.get("/jobs/{job_id}")
 async def get_job(job_id: str):
     job = _jobs.get(job_id)

@@ -30,7 +30,35 @@ def _wait_for_job(client, job_id, timeout=3.0):
     return client.get(f"/jobs/{job_id}").json()
 
 
-# ---------- /jobs ----------
+# ---------- /health ----------
+
+def test_health(client):
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    assert resp.json() == {"status": "ok"}
+
+
+# ---------- /jobs (list) ----------
+
+def test_list_jobs_empty(client):
+    assert client.get("/jobs").json() == {}
+
+
+def test_list_jobs_shows_all(tmp_path, client):
+    audio = tmp_path / "audio.m4a"
+    audio.write_bytes(b"fake")
+
+    with patch("mlx_nemotron.server.transcribe", return_value="hello"):
+        resp = client.post("/transcribe/path", json={"path": str(audio)})
+        job_id = resp.json()["job_id"]
+        _wait_for_job(client, job_id)
+
+    all_jobs = client.get("/jobs").json()
+    assert job_id in all_jobs
+    assert all_jobs[job_id]["status"] == "done"
+
+
+# ---------- /jobs (single) ----------
 
 def test_get_unknown_job(client):
     assert client.get("/jobs/does-not-exist").status_code == 404
