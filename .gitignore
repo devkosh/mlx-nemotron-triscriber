@@ -26,6 +26,11 @@ __pycache__/
 # macos
 .DS_Store
 
+# macos app build artifacts
+macos_app/.build/
+macos_app/.swiftpm/
+macos_app/Package.resolved
+
 # editor
 .idea/
 .vscode/
